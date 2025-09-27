@@ -5,13 +5,13 @@ class Stok extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->library('form_validation');
-        $this->load->library('session');
+        $this->load->model(['StokBarangModel']);
+        pimpinan_or_admin();
     }
 
     public function index() {
         $data['title'] = 'Data Stok';
-        $data['stok'] = $this->db->get('tb_stok_barang')->result();
+        $data['stok'] = $this->StokBarangModel->getAll()->result();
 
         $this->load->view('template/header', $data);
         $this->load->view('template/sidebar', $data);
@@ -21,7 +21,8 @@ class Stok extends CI_Controller {
 
     public function print() {
         $data['title'] = 'Print Stok';
-        $data['stok'] = $this->db->get('tb_stok_barang')->result();
+        $data['stok'] = $this->StokBarangModel->getAll()->result();
+        
         $this->load->view('print/stok', $data);
     }
 }

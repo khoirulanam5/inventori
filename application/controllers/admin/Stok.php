@@ -5,29 +5,19 @@ class Stok extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->library('form_validation');
-        $this->load->library('session');
+        $this->load->model(['StokBarangModel']);
+        isadmin();
     }
 
     public function index() {
         $data['title'] = 'Data Stok';
-        $data['stok'] = $this->db->get('tb_stok_barang')->result();
+        $data['stok'] = $this->StokBarangModel->getAll()->result();
 
         $this->load->view('template/header', $data);
         $this->load->view('template/sidebar', $data);
         $this->load->view('admin/stok', $data);
         $this->load->view('template/footer');
     }
-
-    public function generateIdStok() {
-        $unik = 'S';
-        $kode = $this->db->query("SELECT MAX(id_stok) LAST_NO FROM tb_stok_barang WHERE id_stok LIKE '".$unik."%'")->row()->LAST_NO;
-        $urutan = (int) substr($kode, 1, 3);
-        $urutan++;
-        $huruf = $unik;
-        $kode = $huruf . sprintf("%03s", $urutan);
-        return $kode;
-      }
 
     public function add() {
         $this->form_validation->set_rules('nm_barang', 'Nama Barang', 'required');
@@ -47,15 +37,14 @@ class Stok extends CI_Controller {
             $image = $this->upload->data('file_name');
             
             $data = [
-                'id_stok' => $this->generateIdStok(),
+                'id_stok' => $this->StokBarangModel->generateId(),
                 'nm_barang' => $this->input->post('nm_barang'),
                 'jenis_barang' => $this->input->post('jenis_barang'),
                 'foto' => $image,
                 'jml_barang' => $this->input->post('jml_barang'),
                 'tgl_update' => date('Y-m-d')
             ];
-
-            $this->db->insert('tb_stok_barang', $data);
+            $this->StokBarangModel->save($data);
 
             $this->session->set_flashdata("pesan", "<script>Swal.fire({title:'Berhasil', text:'Data stok berhasil ditambahkan', icon:'success'})</script>");
             redirect('admin/stok');
@@ -71,8 +60,6 @@ class Stok extends CI_Controller {
             $this->session->set_flashdata("pesan", "<script>Swal.fire({title:'Maaf', text:'Kesalahan input data', icon:'warning'})</script>");
             redirect('admin/stok');
         } else {
-            $id = $this->input->post('id_stok');
-
             // Cek jika ada file foto yang diunggah
             $config['allowed_types'] = 'gif|jpg|png|jpeg';
             $config['max_size'] = '2048';
@@ -84,21 +71,19 @@ class Stok extends CI_Controller {
                 $image = $this->upload->data('file_name');
             } else {
                 // Jika tidak ada file baru, ambil foto lama dari database
-                $stok = $this->db->get_where('tb_stok_barang', ['id_stok' => $id])->row();
+                $stok = $this->StokBarangModel->getById($id_stok)->row();
                 $image = $stok->foto; // Gunakan foto lama
             }
 
             $data = [
-                'id_stok' => $id,
+                'id_stok' => $id_stok,
                 'nm_barang' => $this->input->post('nm_barang'),
                 'jenis_barang' => $this->input->post('jenis_barang'),
                 'foto' => $image,
                 'jml_barang' => $this->input->post('jml_barang'),
                 'tgl_update' => date('Y-m-d')
             ];
-
-            $this->db->where('id_stok', $id);
-            $this->db->update('tb_stok_barang', $data);
+            $this->StokBarangModel->edit($id_stok, $data);
 
             $this->session->set_flashdata("pesan", "<script>Swal.fire({title:'Berhasil', text:'Data stok berhasil diupdate', icon:'success'})</script>");
             redirect('admin/stok');
@@ -106,8 +91,8 @@ class Stok extends CI_Controller {
     }
 
     public function delete($id_stok) {
-        $this->db->where('id_stok', $id_stok);
-        $this->db->delete('tb_stok_barang');
+        $this->StokBarangModel->delete($id_stok);
+
         $this->session->set_flashdata("pesan", "<script>Swal.fire({title:'Berhasil', text:'Data stok berhasil dihapus', icon:'success'})</script>");
         redirect('admin/stok');
     }

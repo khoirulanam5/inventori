@@ -2,10 +2,9 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Auth extends CI_Controller {
+
     public function __construct() {
         parent::__construct();
-        $this->load->library('form_validation');
-        $this->load->library('session');
     }
 
     public function index() {
@@ -24,7 +23,7 @@ class Auth extends CI_Controller {
             $username = $this->input->post('username');
             $password = $this->input->post('password');
 
-            $cek = $this->db->get_where("tb_user", array("username" => $username, "password" => $password))->row();
+            $cek = $this->db->get_where("tb_user", ["username" => $username, "password" => $password])->row();
 
                 if(!empty($cek)) {
                     $ses = [
@@ -34,7 +33,6 @@ class Auth extends CI_Controller {
                         'nm_pengguna' => $cek->nm_pengguna,
                         'level' => $cek->level
                     ];
-                    
                     $this->session->set_userdata($ses);
 
                     if ($cek->level == 'PIMPINAN') {

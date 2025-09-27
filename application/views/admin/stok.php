@@ -1,6 +1,6 @@
 <div class="container-fluid">
 	<div class="d-sm-flex align-items-center justify-content-between mb-4">
-		<h3 class="h3 mb-0 text-gray-800"><b><?= $title?></b></h3>
+		<h3 class="h3 mb-0 text-gray-800"><b><?= $title ?></b></h3>
 	</div>
 	<button class="btn btn-sm btn-primary mb-3" data-toggle="modal" data-target="#add"><i class="fas fa-plus fa-sm"></i> Tambah</button>
 	<?= $this->session->flashdata('pesan') ?>
@@ -104,7 +104,6 @@
         <form action="<?= base_url('admin/stok/edit/' . $value->id_stok) ?>" method="post" enctype="multipart/form-data">
           <div class="form-group">
             <label>Nama Barang</label>
-            <input type="hidden" name="id_stok" value="<?= $value->id_stok ?>">
             <input type="text" name="nm_barang" id="nm_barang" class="form-control" value="<?= $value->nm_barang ?>" required>
           </div>
           <div class="form-group">
@@ -133,7 +132,6 @@
   </div>
 </div>
 <?php endforeach; ?>
-
 
 <script>
    document.querySelectorAll('.hapus').forEach(item => {
