@@ -32,4 +32,4 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /tests/results/
 
 # For key system
-db_inventori.sql
+*.sql
